@@ -1,15 +1,19 @@
+import 'dotenv/config'
 import Fastify from 'fastify'
-import test from  "./routes/test"
+import testRoutes from  "./routes/test"
+import dbConnector from "./dbConnector";
 
 const server = Fastify({
     logger: true
 })
 
+server.register(dbConnector)
+
 server.get('/health', async () => {
     return {status: 'ok'}
 })
 
-server.register(test, {prefix: 'test'})
+server.register(testRoutes, {prefix: 'test'})
 
 const start = async () => {
     try {
