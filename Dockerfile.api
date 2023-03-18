@@ -1,0 +1,8 @@
+FROM node:18
+WORKDIR /app
+
+COPY api .
+COPY .env .
+RUN npm install --production
+
+CMD ["node", "src/app.js"]

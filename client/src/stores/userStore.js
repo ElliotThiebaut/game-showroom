@@ -28,7 +28,7 @@ export const useUserStore = defineStore('user', {
                         await axios
                             .get(`${import.meta.env.VITE_API_URL}/user?email=${formEmail}`, {
                                 headers: {
-                                    'Authorization':  'KEY uJ4cN0kZ7Q1kn98NzTYzngoLX7YUsWh7'
+                                    'Authorization':  `KEY ${import.meta.env.VITE_DB_GATHERING_KEY}`
                                 }
                             })
 
@@ -47,7 +47,7 @@ export const useUserStore = defineStore('user', {
                         await axios
                             .get(`${import.meta.env.VITE_API_URL}/user?id=${localStorage.getItem('userId')}`, {
                                 headers: {
-                                    'Authorization':  'KEY uJ4cN0kZ7Q1kn98NzTYzngoLX7YUsWh7'
+                                    'Authorization':  `KEY ${import.meta.env.VITE_DB_GATHERING_KEY}`
                                 }
                             })
 
@@ -70,7 +70,7 @@ export const useUserStore = defineStore('user', {
                 await axios
                     .put(`${import.meta.env.VITE_API_URL}/user/video/${this.id}/${addedGameId}`, {}, {
                         headers: {
-                            'Authorization':  'KEY uJ4cN0kZ7Q1kn98NzTYzngoLX7YUsWh7'
+                            'Authorization':  `KEY ${import.meta.env.VITE_DB_GATHERING_KEY}`
                         }
                     })
 
@@ -87,7 +87,7 @@ export const useUserStore = defineStore('user', {
                 await axios
                     .delete(`${import.meta.env.VITE_API_URL}/user/video/${this.id}/${deletedGameId}`, {
                         headers: {
-                            'Authorization':  'KEY uJ4cN0kZ7Q1kn98NzTYzngoLX7YUsWh7'
+                            'Authorization':  `KEY ${import.meta.env.VITE_DB_GATHERING_KEY}`
                         }
                     })
 
@@ -105,7 +105,7 @@ export const useUserStore = defineStore('user', {
                 await axios
                     .put(`${import.meta.env.VITE_API_URL}/user/firstvisit/${this.id}?status=false`, {}, {
                         headers: {
-                            'Authorization':  'KEY uJ4cN0kZ7Q1kn98NzTYzngoLX7YUsWh7'
+                            'Authorization':  `KEY ${import.meta.env.VITE_DB_GATHERING_KEY}`
                         }
                     })
 

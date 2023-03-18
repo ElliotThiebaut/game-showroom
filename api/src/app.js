@@ -4,7 +4,6 @@ import cors from 'cors';
 import {mongoConnect} from "./db-connexion.js";
 import {ApiError, errorHandler} from "./middleware/error.js";
 
-
 import {router as routerGathering} from "./routes/gathering.js"
 
 

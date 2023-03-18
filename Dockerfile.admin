@@ -1,0 +1,12 @@
+FROM node:latest as build-stage
+WORKDIR /admin-app
+COPY ./admin/package*.json .
+COPY ./.env .
+RUN npm install
+COPY ./admin/ .
+RUN npm run admin:build
+
+FROM nginx as production-stage
+RUN mkdir /admin-app
+COPY --from=build-stage /admin-app/dist /admin-app
+COPY ./admin/nginx.conf /etc/nginx/nginx.conf

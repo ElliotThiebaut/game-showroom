@@ -9,6 +9,8 @@ import fs from "fs";
 import * as path from "path";
 import axios from "axios";
 
+import dotenv from 'dotenv'
+dotenv.config()
 
 const coverStorage = multer.diskStorage({
     destination: (req, file, callback) => {

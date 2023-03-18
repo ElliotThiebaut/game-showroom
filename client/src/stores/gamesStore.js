@@ -13,7 +13,7 @@ export const useGameStore = defineStore('games', {
                     await axios
                         .get(`${import.meta.env.VITE_API_URL}/games`, {
                             headers: {
-                                'Authorization':  'KEY uJ4cN0kZ7Q1kn98NzTYzngoLX7YUsWh7'
+                                'Authorization':  `KEY ${import.meta.env.VITE_DB_GATHERING_KEY}`
                             }
                         })
 
@@ -37,7 +37,7 @@ export const useGameStore = defineStore('games', {
                 await axios
                     .post(`${import.meta.env.VITE_API_URL}/answer/${userId}/${gameId}`, answersData, {
                         headers: {
-                            'Authorization':  'KEY uJ4cN0kZ7Q1kn98NzTYzngoLX7YUsWh7'
+                            'Authorization':  `KEY ${import.meta.env.VITE_DB_GATHERING_KEY}`
                         }
                     })
             } catch (error) {

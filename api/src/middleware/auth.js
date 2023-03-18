@@ -1,4 +1,3 @@
-import {client} from "../db-connexion.js";
 import {ApiError, AuthError} from "./error.js";
 
 export class Auth {
@@ -11,23 +10,19 @@ export class Auth {
                 key = req.headers.authorization.slice(4)
             }
 
-            const dbUser = await client.db('auth').collection('users').findOne({secretKey: key})
 
-            if (!dbUser) {
-                return next(new ApiError('Invalid API Key', 'Invalid API Key for the request', 'invalid-auth', 401))
+            if (key === process.env.VITE_DB_GATHERING_KEY && roles.includes('gathering-database')) {
+                res.locals.user = 'Client app'
+                res.locals.permissions = ['gathering-database']
+            } else if (key === process.env.DB_GATHERING_ADMIN_KEY) {
+                res.locals.user = 'Admin app'
+                res.locals.permissions = ['gathering-admin-database', 'gathering-database']
             } else {
-                if (roles && !dbUser.permission.includes('admin')) {
-                    for (let role of roles) {
-                        if (!dbUser.permission.includes(role)) {
-                            return next(new AuthError())
-                        }
-                    }
-                }
-
-                res.locals.user = dbUser.name
-                res.locals.permissions = dbUser.permission
-                return next()
+                return next(new AuthError())
             }
+
+            return next()
+
         }
     }
 }
