@@ -33,7 +33,8 @@ export const errorHandler = async (err, req, res, next) => {
     res.locals.user = res.locals.user || 'Unknown';
 
     // Logging error to console
-    console.log(`(${res.locals.user}) ${err.logMessage} in ${req.originalUrl}`)
+    console.log(`(${res.locals.user}) ${err.logMessage} in ${req.originalUrl} :`)
+    console.log(err)
 
     // Sending error to client
     res.status(parseInt(err.statusCode)).json({
