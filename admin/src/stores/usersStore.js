@@ -20,7 +20,7 @@ export const useUsersStore = defineStore('users', {
         getNumberOfOneVideoUser() {
             const gamesStore = useGamesStore()
             if (gamesStore.getNumberOfGames === 0) {
-                return 'Searching...'
+                return 'N/A'
             } else {
                 return this.users.filter(value => value.viewedVideo.length >= 1).length
             }
@@ -29,7 +29,7 @@ export const useUsersStore = defineStore('users', {
         getNumberOfHalfVideoUser() {
             const gamesStore = useGamesStore()
             if (gamesStore.getNumberOfGames === 0) {
-                return 'Searching...'
+                return 'N/A'
             } else {
                 return this.users.filter(value => value.viewedVideo.length >= gamesStore.getNumberOfGames / 2).length
             }
@@ -38,7 +38,7 @@ export const useUsersStore = defineStore('users', {
         getNumberOfAllVideoUser() {
             const gamesStore = useGamesStore()
             if (gamesStore.getNumberOfGames === 0) {
-                return 'Searching...'
+                return 'N/A'
             } else {
                 return this.users.filter(value => value.viewedVideo.length === gamesStore.getNumberOfGames).length
             }
