@@ -582,7 +582,7 @@ router.post('/video/:gameId', Auth.ensureRole(['gathering-admin-database']), vid
         return next(new ApiError('A error occurred while uploading to the CDN', 'A error occurred while uploading to the CDN', 'api-error', '500'))
     }
 
-    let updatedGame = await client.db('boardgamegallerie').collection('games').updateOne({$and: [{_id: gameObjectId}, {deleted: { $ne: true }}]}, {$set: {videoUrl: `https://vz-8b616db8-c84.b-cdn.net/${createVideoResponse.data.guid}/playlist.m3u8`}})
+    let updatedGame = await client.db('boardgamegallerie').collection('games').updateOne({$and: [{_id: gameObjectId}, {deleted: { $ne: true }}]}, {$set: {videoUrl: `https://vz-b4aff626-324.b-cdn.net/${createVideoResponse.data.guid}/playlist.m3u8`}})
     if (updatedGame.acknowledged && updatedGame.matchedCount){
         console.log(`(${res.locals.user}) Video updated in /video`);
         res.send({message:'Video updated', url: `https://vz-b4aff626-324.b-cdn.net/${createVideoResponse.data.guid}/playlist.m3u8`})
