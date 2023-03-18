@@ -4,6 +4,9 @@ services:
     image: mongo:6.0.2
     volumes:
       - ${VOLUME_PATH_DB}:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    environment:
+      - MONGO_INITDB_DATABASE=boardgamegallerie
     restart: always
     deploy:
       restart_policy:
