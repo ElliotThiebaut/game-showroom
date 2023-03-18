@@ -1,0 +1,1 @@
+Directory reserved for files transferred threw the API that are to be deleted at the end of each request
