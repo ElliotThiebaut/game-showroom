@@ -20,4 +20,21 @@ Dans le dossier `api` se trouve l'application NodeJS Fastify qui gère le backen
 
 Le déploiement du service se fait via le fichier `docker-compose.yml` qui créer les trois containers docker.
 
-Le fichier `.env` permet de configurer toutes les variables nécessaire. 
+Le fichier `.env` permet de configurer toutes les variables nécessaires :
+
+```dotenv
+VITE_DB_GATHERING_KEY=
+DB_GATHERING_ADMIN_KEY=
+
+VOLUME_PATH_DB=
+
+API_PORT=
+CLIENT_PORT=
+ADMIN_PORT=
+
+DB_HOST=
+IMAGE_CDN_KEY=
+VIDEO_CDN_KEY=
+
+VITE_API_URL=
+```
