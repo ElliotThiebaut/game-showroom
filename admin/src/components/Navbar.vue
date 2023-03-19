@@ -1,6 +1,6 @@
 <template>
-  <div class="global-container h-24 flex bg-primary-red justify-between items-center font-title text-white text-lg">
-    <img class="w-16" src="@/assets/img/logoWhite.png" alt="logo">
+  <div class="global-container h-20 flex bg-primary-red justify-between items-center font-title text-white text-lg">
+    <img class="w-12" src="@/assets/img/Roquette-Lab-Picto-Blanc.png" alt="logo">
     <div class="flex" v-if="!isLoginPage">
       <router-link class="text-white mr-5 lg:mr-10" to="/users">Users</router-link>
       <router-link class="text-white mr-5 lg:mr-10" to="/answers">Answers</router-link>

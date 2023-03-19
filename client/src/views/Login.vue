@@ -1,22 +1,43 @@
 <template>
-  <div class="h-[60vh] flex flex-col justify-center lg:w-2/3 xl:w-1/2 3xl:w-1/3 mx-auto">
-    <div class="mx-auto text-center mb-20">
-      <h1 class="font-title text-primary-red text-2xl">Welcome to the 2022 Gathering !</h1>
-    </div>
-    <div class="p-5 flex flex-col w-full">
-      <form @submit.prevent="loginSubmit" class="flex flex-col">
-        <label for="email" class="font-subtitle text-xl mb-3">Email</label>
-        <input type="email" placeholder="mail@company.com" id="email" v-model="formEmail" class="border-b-primary-red border-b-2 mb-3">
-        <input type="submit" value="Connexion" class="bg-primary-red p-2 font-title text-white cursor-pointer">
-      </form>
+    <div v-if="formRegister" class="h-[80vh] flex flex-col justify-center lg:w-2/3 xl:w-1/2 3xl:w-1/3 mx-auto">
+        <div class="p-5 flex flex-col w-full">
+            <form @submit.prevent="loginRegister" class="flex flex-col">
+                <label class="font-subtitle">Email</label>
+                <input type="email" placeholder="mail@company.com" v-model="formRegisterValues.formRegisterEmail" class="border-b-primary-red border-b-2 mb-3 p-1">
 
-          <!--  Disabled guest login temporarily  -->
-          <!--  <button @click="loginGuest" class="border-2 border-primary-red p-2 font-title cursor-pointer mt-3 text-primary-red">Enter as Guest</button>  -->
+                <label class="font-subtitle mt-2">Name</label>
+                <input type="text" placeholder="Your name..." v-model="formRegisterValues.formRegisterName" class="border-b-primary-red border-b-2 mb-3 p-1">
 
-        <p class="my-5 font-subtitle text-primary-red">Dont have a account ? <a href="https://register.blueorange.events" target="_blank" class="underline decoration-2 underline-offset-2">Register here</a></p>
-      <div class="bg-yellow-400/70 font-subtitle text-center rounded-lg mt-5 p-3" v-if="formError">{{ formError }}</div>
+                <label class="font-subtitle mt-2">Surname</label>
+                <input type="text" placeholder="Your surname..." v-model="formRegisterValues.formRegisterSurname" class="border-b-primary-red border-b-2 mb-3 p-1">
+
+                <label class="font-subtitle mt-2">Company</label>
+                <input type="text" placeholder="Enterprise Inc." v-model="formRegisterValues.formRegisterCompany" class="border-b-primary-red border-b-2 mb-3 p-1">
+
+                <label class="font-subtitle mt-2">Service</label>
+                <input type="text" placeholder="Your service..." v-model="formRegisterValues.formRegisterService" class="border-b-primary-red border-b-2 mb-3 p-1">
+
+                <label class="font-subtitle mt-2">Country</label>
+                <input type="text" placeholder="France" v-model="formRegisterValues.formRegisterCountry" class="border-b-primary-red border-b-2 mb-3 p-1">
+
+                <input type="submit" value="Submit" class="bg-primary-red p-2 font-title text-white cursor-pointer mt-3">
+            </form>
+
+            <p class="bg-yellow-400/70 font-subtitle text-center rounded-lg mt-5 p-3" v-if="formRegisterError">{{ formRegisterError }}</p>
+        </div>
     </div>
-  </div>
+    <div v-else class="h-[80vh] flex flex-col justify-center lg:w-2/3 xl:w-1/2 3xl:w-1/3 mx-auto">
+        <div class="p-5 flex flex-col w-full">
+            <form @submit.prevent="loginSubmit" class="flex flex-col">
+                <label for="email" class="font-subtitle text-xl mb-3">Email</label>
+                <input type="email" placeholder="mail@company.com" id="email" v-model="formEmail" class="border-b-primary-red border-b-2 mb-3 p-1">
+                <input type="submit" value="Log In" class="bg-primary-red p-2 font-title text-white cursor-pointer">
+            </form>
+
+            <button @click="formRegister = true" class="border-2 border-primary-red p-2 font-title cursor-pointer mt-3 text-primary-red">Register</button>
+            <p class="bg-yellow-400/70 font-subtitle text-center rounded-lg mt-5 p-3" v-if="formError">{{ formError }}</p>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -29,8 +50,18 @@ export default {
 
   data() {
     return {
-      formEmail: '',
-      formError: this.errorPassed
+        formEmail: '',
+        formRegisterValues: {
+            formRegisterEmail: '',
+            formRegisterSurname: '',
+            formRegisterName: '',
+            formRegisterCompany: '',
+            formRegisterCountry: '',
+            formRegisterService: '',
+        },
+        formError: this.errorPassed,
+        formRegisterError: '',
+        formRegister: false
     }
   },
 
@@ -40,32 +71,43 @@ export default {
   },
 
   methods: {
-    ...mapActions(useUserStore, ['getUser']),
+    ...mapActions(useUserStore, ['getUser', 'registerUser']),
 
-    loginSubmit() {
-      this.getUser(this.formEmail, '')
-        .then(() => {
-          this.formEmail = ''
-          this.formError = ''
-          this.$router.push({ name: `Home`})
-        })
-        .catch((err) => {
-          this.formEmail = ''
-          if (err.message === '404') {
-            this.formError = "We didn't find this email, please try again"
-          } else {
-            this.formError = 'Server Error, please try again later'
-          }
-        })
-    },
+        loginSubmit() {
+          this.getUser(this.formEmail, '')
+            .then(() => {
+              this.formEmail = ''
+              this.formError = ''
+              this.$router.push({ name: `Home`})
+            })
+            .catch((err) => {
+              this.formEmail = ''
+              if (err.message === '404') {
+                this.formError = "We didn't find this email, please try again"
+              } else {
+                this.formError = 'Server Error, please try again later'
+              }
+            })
+        },
 
-    //  Disabled guest login temporarily
-
-    // loginGuest() {
-    //   this.isGuest = true
-    //   this.$router.push({ name: `Home`})
-    // }
-
+      loginRegister () {
+          this.registerUser(this.formRegisterValues)
+              .then(() => {
+                  this.formRegisterValues = {
+                      formRegisterEmail: '',
+                      formRegisterSurname: '',
+                      formRegisterName: '',
+                      formRegisterCompany: '',
+                      formRegisterCountry: '',
+                      formRegisterService: '',
+                  }
+                  this.formRegisterError = ''
+                  this.formRegister = false
+              })
+              .catch((err) => {
+                  this.formError = 'Something went wrong, please try again'
+              })
+      },
   },
 
   created() {

@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full flex items-center justify-center">
-    <TrashIcon @click="clickTrash" class="w-5 h-5 text-primary-purple cursor-pointer"/>
+    <TrashIcon @click="clickTrash" class="w-5 h-5 text-red-600 cursor-pointer"/>
   </div>
 </template>
 

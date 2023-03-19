@@ -21,6 +21,26 @@ export const useUserStore = defineStore('user', {
             this.viewedVideo = []
         },
 
+        async registerUser(formData) {
+            try {
+                console.log('Register 2')
+                await axios.post(`${import.meta.env.VITE_API_URL}/register`, {
+                    "email": formData.formRegisterEmail,
+                    "name": formData.formRegisterName,
+                    "surname": formData.formRegisterSurname,
+                    "company": formData.formRegisterCompany,
+                    "country": formData.formRegisterCountry,
+                    "service": formData.formRegisterService
+                }, {
+                    headers: {
+                        'Authorization':  `KEY ${import.meta.env.VITE_DB_GATHERING_KEY}`
+                    }
+                })
+            } catch (error) {
+                throw new Error(error.response.status.toString());
+            }
+        },
+
         async getUser(formEmail, localId) {
             if (formEmail) {
                 try {

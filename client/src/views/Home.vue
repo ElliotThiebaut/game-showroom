@@ -32,7 +32,7 @@
     </div>
   </div>
   <div v-if="!isLoading && gamesStore.games.length === 0">
-    <h1 class="text-center text-2xl text-primary-red font-title mt-60">There are no games to discover right now 😢, please come back later !</h1>
+    <h1 class="text-center text-2xl font-title mt-60 lg:mt-72 underline">There are no games to discover right now 😢, please come back later !</h1>
   </div>
 
   <div v-if="isLoading" class="h-[60vh] flex flex-col justify-center">

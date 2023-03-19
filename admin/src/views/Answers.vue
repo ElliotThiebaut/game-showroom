@@ -9,11 +9,11 @@
     </div>
   </HeaderCard>
 
-  <v-grid class="h-[60vh]" readonly="true" autoSizeColumn="true" theme="material" filter="true" :source="answersStore.getTableAnswerData" :columns="answersStore.getTableColumns"/>
+  <v-grid class="h-[40vh]" readonly="true" autoSizeColumn="true" theme="material" filter="true" :source="answersStore.getTableAnswerData" :columns="answersStore.getTableColumns"/>
 
   <!-- Loading spinner -->
-  <div v-if="isLoading" class="h-[60vh] flex flex-col justify-center">
-    <ClipLoader :loading="true" :color="'#E62953'" :size="'50px'"/>
+  <div v-if="isLoading" class="h-[50vh] flex flex-col justify-center">
+    <ClipLoader :loading="true" :color="'#009A89'" :size="'50px'"/>
   </div>
 </template>
 
