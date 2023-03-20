@@ -102,7 +102,7 @@
                                     <ExclamationIcon v-if="stop.timestamp === 0" class="h-7 w-7 text-yellow-300 mr-1" />
                                     <label class="font-text" :class="stop.timestamp === 0 ? 'text-yellow-300 font-bold' : ''">Timestamp (in seconds)</label>
                                 </div>
-                                <input type="number" class="bg-white text-black rounded mt-1 font-text p-2" required v-model="stop.timestamp" />
+                                <input type="number" min="0" oninput="validity.valid||(value='')" class="bg-white text-black rounded mt-1 font-text p-2" required v-model="stop.timestamp" />
                             </div>
                             <div v-for="(question, indexQ) in stop.questions" class="bg-primary-purple rounded-lg my-3 px-2 py-4 lg:px-5">
                                 <div class="flex flex-col mb-4">
