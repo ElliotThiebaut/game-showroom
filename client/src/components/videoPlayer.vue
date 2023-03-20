@@ -41,7 +41,7 @@ export default {
     },
 
     computed: {
-        ...mapState(useUserStore, ["isGuest", "viewedVideo"]),
+        ...mapState(useUserStore, ["viewedVideo"]),
         ...mapState(useLogicStore, ["alertHandler"]),
         ...mapStores(useGameStore),
     },
@@ -54,7 +54,7 @@ export default {
             }
 
             // Check if video stops should be displayed
-            if (!this.isGuest && !this.viewedVideo.includes(this.gamesStore.games[this.gameIndex]._id)) {
+            if (!this.viewedVideo.includes(this.gamesStore.games[this.gameIndex]._id)) {
                 // Check with timestamp if it is time to show QuestionModal and if video is not already paused
                 if (
                     this.currentVideoStop <= this.gamesStore.games[this.gameIndex].videoStops.length - 1 &&

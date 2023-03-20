@@ -42,7 +42,7 @@ export default {
         });
 
         // Fetching user from API if no user data
-        if (!this.isGuest && !this.userStore.id) {
+        if (!this.userStore.id) {
             if (localStorage.getItem("userId")) {
                 this.getUser("", localStorage.getItem("userId"))
                     .then(() => {

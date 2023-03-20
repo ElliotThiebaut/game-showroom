@@ -68,7 +68,6 @@ export default {
 
     computed: {
         ...mapState(useUserStore, ["id"]),
-        ...mapWritableState(useUserStore, ["isGuest"]),
     },
 
     methods: {

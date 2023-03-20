@@ -3,7 +3,6 @@ import axios from "axios";
 
 export const useUserStore = defineStore("user", {
     state: () => ({
-        isGuest: false,
         id: "",
         email: "",
         name: "",
@@ -13,7 +12,6 @@ export const useUserStore = defineStore("user", {
 
     actions: {
         reset() {
-            this.isGuest = false;
             this.id = "";
             this.email = "";
             this.name = "";

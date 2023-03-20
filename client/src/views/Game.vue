@@ -9,7 +9,7 @@
     />
 
     <!-- Quitting confirmation modal -->
-    <div v-if="isConfirmBackModal && !isGuest">
+    <div v-if="isConfirmBackModal">
         <div class="backdrop-blur-sm bg-gray-600/50 overflow-auto py-10 lg:px-20 xl:px-40 2xl:px-72 3xl:px-[35rem] px-5 fixed z-10 inset-0 w-full h-screen">
             <div class="bg-primary-red text-white text-center rounded-md px-5 lg:px-10 py-10 mt-44 max-w-lg mx-auto">
                 <h1 class="font-title text-xl">Your feedback is important to us !</h1>
@@ -104,10 +104,10 @@ export default {
 
     computed: {
         ...mapStores(useGameStore),
-        ...mapState(useUserStore, ["isGuest", "viewedVideo", "firstVisit"]),
+        ...mapState(useUserStore, ["viewedVideo", "firstVisit"]),
 
         isViewed() {
-            return !this.isGuest && this.viewedVideo.includes(this.gamesStore.games[this.gameIndex]._id);
+            return this.viewedVideo.includes(this.gamesStore.games[this.gameIndex]._id);
         },
     },
 
@@ -142,7 +142,7 @@ export default {
         },
 
         backHomepage(confirmed) {
-            if (this.isViewed || this.isGuest || confirmed) {
+            if (this.isViewed || confirmed) {
                 this.$router.push({ name: `Home` });
             } else {
                 this.isConfirmBackModal = true;
@@ -180,7 +180,7 @@ export default {
             this.isLoading = false;
         }
 
-        if (!this.isGuest && this.firstVisit) {
+        if (this.firstVisit) {
             this.$router.push({ name: `Home` });
         }
     },
