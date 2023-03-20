@@ -27,7 +27,7 @@ export const useLogicStore = defineStore("logic", {
 
                 localStorage.setItem("gatheringKey", formKey);
                 this.key = formKey;
-                gamesStore.fetchGames();
+                await gamesStore.fetchGames();
                 userStore.users = response.data;
             } catch (error) {
                 throw new Error(error.response.status.toString());
