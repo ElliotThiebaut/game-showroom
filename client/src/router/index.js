@@ -5,7 +5,6 @@ import { useUserStore } from "@/stores/userStore";
 
 function isUserAuthenticated() {
     const userStore = useUserStore();
-    console.log(userStore.id ? true : "/login")
     return userStore.id ? true : "/login";
 }
 
