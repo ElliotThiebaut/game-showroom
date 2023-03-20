@@ -22,10 +22,10 @@ export default {
     },
 
     computed: {
-        ...mapState(useUserStore, ["isGuest", "viewedVideo"]),
+        ...mapState(useUserStore, ["viewedVideo"]),
 
         isViewed() {
-            return !this.isGuest && this.viewedVideo.includes(this.id);
+            return this.viewedVideo.includes(this.id);
         },
     },
 };
