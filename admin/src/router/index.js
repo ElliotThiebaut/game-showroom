@@ -3,8 +3,15 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useLogicStore } from "@/stores/logicStore";
 import Users from "@/views/Users.vue";
 
-function isUserAuthenticated() {
+async function isUserAuthenticated() {
     const logicStore = useLogicStore();
+
+    if (!logicStore.key) {
+        if (localStorage.getItem("gatheringKey")) {
+            await logicStore.checkKey(localStorage.getItem("gatheringKey"))
+        }
+    }
+
     return logicStore.key ? true : "/login";
 }
 

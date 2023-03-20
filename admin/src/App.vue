@@ -23,7 +23,6 @@ export default {
     },
 
     created() {
-        // Removing error modal after 3.5 seconds
         this.logicStore.$subscribe((mutation, state) => {
             if (state.alertHandler.isError) {
                 setTimeout(() => {
@@ -31,16 +30,6 @@ export default {
                 }, 3500);
             }
         });
-
-        if (!this.logicStore.key) {
-            if (localStorage.getItem("gatheringKey")) {
-                this.logicStore.checkKey(localStorage.getItem("gatheringKey")).catch(e => {
-                    this.$router.push({ name: `Login`, params: { errorPassed: "Session Expired, please login again" } });
-                });
-            } else {
-                this.$router.push({ name: `Login` });
-            }
-        }
     },
 };
 </script>

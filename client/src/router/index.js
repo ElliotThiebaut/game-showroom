@@ -3,8 +3,15 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/Home.vue";
 import { useUserStore } from "@/stores/userStore";
 
-function isUserAuthenticated() {
+async function isUserAuthenticated() {
     const userStore = useUserStore();
+
+    if (!userStore.id) {
+        if (localStorage.getItem("userId")) {
+            await userStore.getUser("", localStorage.getItem("userId"))
+        }
+    }
+
     return userStore.id ? true : "/login";
 }
 

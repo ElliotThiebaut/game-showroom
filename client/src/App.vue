@@ -32,7 +32,6 @@ export default {
     },
 
     created() {
-        // Removing error modal after 3.5 seconds
         this.logicStore.$subscribe((mutation, state) => {
             if (state.alertHandler.isError) {
                 setTimeout(() => {
@@ -40,23 +39,6 @@ export default {
                 }, 3500);
             }
         });
-
-        // Fetching user from API if no user data
-        if (!this.userStore.id) {
-            if (localStorage.getItem("userId")) {
-                this.getUser("", localStorage.getItem("userId"))
-                    .then(() => {
-                        if (this.$route.name === "Login") {
-                            this.$router.push({ name: `Home` });
-                        }
-                    })
-                    .catch(error => {
-                        this.$router.push({ name: `Login`, params: { errorPassed: "Session Expired, please login again" } });
-                    });
-            } else {
-                this.$router.push({ name: `Login` });
-            }
-        }
     },
 };
 </script>
