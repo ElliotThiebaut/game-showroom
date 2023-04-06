@@ -1,5 +1,5 @@
 import Fastify from 'fastify'
-import test from  "./routes/test"
+import users from "./routes/users";
 
 const server = Fastify({
     logger: true
@@ -9,7 +9,7 @@ server.get('/health', async () => {
     return {status: 'ok'}
 })
 
-server.register(test, {prefix: 'test'})
+server.register(users, {prefix: 'users'})
 
 const start = async () => {
     try {

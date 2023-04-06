@@ -6,3 +6,57 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            String   @id @default(uuid())
+  username      String   @unique
+  email         String   @unique
+  tutorial      Boolean  @default(true)
+  role          String   @default("user")
+  answeredGames String[] @default([])
+  isDeleted     Boolean  @default(false)
+  created_at    DateTime @default(now())
+
+  answers Answers[]
+}
+
+model Game {
+  id           String   @id @default(uuid())
+  name         String
+  category     String
+  description  String
+  designers    String[]
+  illustrators String[]
+  imgUrl       String?
+  videoUrl     String?
+  isDeleted    Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  gameQuestions GameQuestion[]
+}
+
+model GameQuestion {
+  id             String   @id @default(uuid())
+  game_id        String
+  videoTimestamp Int
+  question       String
+  defaultAnswers String[]
+  isDeleted      Boolean  @default(false)
+  created_at     DateTime @default(now())
+
+  game    Game      @relation(fields: [game_id], references: [id])
+  answers Answers[]
+}
+
+model Answers {
+  id              String   @id @default(uuid())
+  user_id         String
+  gameQuestion_id String
+  answer          String
+  created_at      DateTime @default(now())
+
+  user         User         @relation(fields: [user_id], references: [id])
+  gameQuestion GameQuestion @relation(fields: [gameQuestion_id], references: [id])
+
+  @@unique([gameQuestion_id, user_id])
+}
