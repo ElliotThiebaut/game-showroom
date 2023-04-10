@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import users from "./routes/users";
+import games from "./routes/games";
 
 const server = Fastify({
     logger: true
@@ -10,6 +11,7 @@ server.get('/health', async () => {
 })
 
 server.register(users, {prefix: 'users'})
+server.register(games, {prefix: 'games'})
 
 const start = async () => {
     try {
