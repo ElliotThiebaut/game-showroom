@@ -91,7 +91,6 @@ async function routes (server: FastifyInstance) {
             return reply.code(200).send({message: 'User updated'})
         } catch (e: any) {
             e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
-            console.log(e)
             if (e.code === 'P2025') return reply.code(404).send({error: 'User not found'})
             else return  reply.code(500).send({error: 'Internal server error'})
         }

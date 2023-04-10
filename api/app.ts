@@ -1,17 +1,25 @@
 import Fastify from 'fastify'
+import multipart from '@fastify/multipart'
+import * as dotenv from 'dotenv'
+
 import users from "./routes/users";
 import games from "./routes/games";
+import uploads from "./routes/uploads";
+
+dotenv.config()
 
 const server = Fastify({
     logger: true
 })
 
+server.register(multipart)
+server.register(users, {prefix: 'users'})
+server.register(games, {prefix: 'games'})
+server.register(uploads, {prefix: 'uploads'})
+
 server.get('/health', async () => {
     return {status: 'ok'}
 })
-
-server.register(users, {prefix: 'users'})
-server.register(games, {prefix: 'games'})
 
 const start = async () => {
     try {
