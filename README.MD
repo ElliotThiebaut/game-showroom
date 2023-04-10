@@ -1,4 +1,4 @@
-# [NEW] Board Game Gallerie
+# [NEW] Game Showroom
 
 Solution web permettant à des entreprises de présenter de nouveaux produits en vidéo tout en récoltant l'avis des clients.
 
