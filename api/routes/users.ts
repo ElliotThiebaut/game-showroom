@@ -22,15 +22,6 @@ async function routes (server: FastifyInstance) {
                 where: {
                     isDeleted: false
                 },
-                select: {
-                    id: true,
-                    username: true,
-                    email: true,
-                    tutorial: true,
-                    role: true,
-                    answeredGames: true,
-                    created_at: true,
-                },
                 orderBy: {
                     created_at: 'desc'
                 }
@@ -47,15 +38,6 @@ async function routes (server: FastifyInstance) {
             const users = await prisma.user.findMany({
                 where: {
                     AND: [{id: userId}, {isDeleted: false}]
-                },
-                select: {
-                    id: true,
-                    username: true,
-                    email: true,
-                    tutorial: true,
-                    role: true,
-                    answeredGames: true,
-                    created_at: true,
                 }
             })
 
@@ -67,7 +49,7 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.post('/register', postRegisterOptions, async (request, reply) => {
+    server.post('/new', postRegisterOptions, async (request, reply) => {
         const {email, username} = request.body as {email: string, username: string}
 
         function isValidEmail(email: string): boolean {
@@ -109,7 +91,9 @@ async function routes (server: FastifyInstance) {
             return reply.code(200).send({message: 'User updated'})
         } catch (e: any) {
             e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
-            return reply.code(500).send({error: 'Internal server error'})
+            console.log(e)
+            if (e.code === 'P2025') return reply.code(404).send({error: 'User not found'})
+            else return  reply.code(500).send({error: 'Internal server error'})
         }
     })
 
@@ -128,6 +112,7 @@ async function routes (server: FastifyInstance) {
             return reply.code(200).send({message: 'User deleted'})
         } catch (e: any) {
             e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
+            if (e.code === 'P2025') return reply.code(404).send({error: 'User not found'})
             return reply.code(500).send({error: 'Internal server error'})
         }
     })
