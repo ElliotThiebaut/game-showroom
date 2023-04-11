@@ -62,14 +62,14 @@ enum QuestionType {
 }
 
 model Answers {
-  id              String   @id @default(uuid())
   user_id         String
   gameQuestion_id String
   answer          String
   created_at      DateTime @default(now())
+  isDeleted       Boolean  @default(false)
 
   user         User         @relation(fields: [user_id], references: [id])
   gameQuestion GameQuestion @relation(fields: [gameQuestion_id], references: [id])
 
-  @@unique([gameQuestion_id, user_id])
+  @@id([gameQuestion_id, user_id])
 }

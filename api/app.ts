@@ -6,6 +6,7 @@ import users from "./routes/users";
 import games from "./routes/games";
 import uploads from "./routes/uploads";
 import gamesQuestions from "./routes/gamesQuestions";
+import answers from "./routes/answers";
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ server.register(users, {prefix: 'users'})
 server.register(games, {prefix: 'games'})
 server.register(uploads, {prefix: 'uploads'})
 server.register(gamesQuestions, {prefix: 'game-questions'})
+server.register(answers, {prefix: 'answers'})
 
 server.get('/health', async () => {
     return {status: 'ok'}
