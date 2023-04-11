@@ -12,12 +12,17 @@ model User {
   username      String   @unique
   email         String   @unique
   tutorial      Boolean  @default(true)
-  role          String   @default("user")
+  role          Role     @default(USER)
   answeredGames String[] @default([])
   isDeleted     Boolean  @default(false)
   created_at    DateTime @default(now())
 
   answers Answers[]
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Game {
@@ -36,16 +41,24 @@ model Game {
 }
 
 model GameQuestion {
-  id             String   @id @default(uuid())
+  id             String       @id @default(uuid())
   game_id        String
   videoTimestamp Int
+  questionType   QuestionType
   question       String
   defaultAnswers String[]
-  isDeleted      Boolean  @default(false)
-  created_at     DateTime @default(now())
+  isDeleted      Boolean      @default(false)
+  created_at     DateTime     @default(now())
 
   game    Game      @relation(fields: [game_id], references: [id])
   answers Answers[]
+}
+
+enum QuestionType {
+  TEXT
+  SELECT
+  SELECT_MULTIPLE
+  RANGE
 }
 
 model Answers {
