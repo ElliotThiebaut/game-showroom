@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv'
 import users from "./routes/users";
 import games from "./routes/games";
 import uploads from "./routes/uploads";
+import gamesQuestions from "./routes/gamesQuestions";
 
 dotenv.config()
 
@@ -13,9 +14,11 @@ const server = Fastify({
 })
 
 server.register(multipart)
+
 server.register(users, {prefix: 'users'})
 server.register(games, {prefix: 'games'})
 server.register(uploads, {prefix: 'uploads'})
+server.register(gamesQuestions, {prefix: 'game-questions'})
 
 server.get('/health', async () => {
     return {status: 'ok'}

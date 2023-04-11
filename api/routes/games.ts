@@ -56,6 +56,9 @@ async function routes (server: FastifyInstance) {
                 where: {
                     isDeleted: false
                 },
+                include: {
+                    gameQuestions: true
+                },
                 orderBy: {
                     created_at: 'desc'
                 }
@@ -72,7 +75,10 @@ async function routes (server: FastifyInstance) {
             const games = await prisma.game.findMany({
                 where: {
                     AND: [{id: gameId}, {isDeleted: false}]
-                }
+                },
+                include: {
+                    gameQuestions: true
+                },
             })
 
             if (games.length === 0) return reply.code(404).send({error: 'Game not found'})
@@ -151,6 +157,15 @@ async function routes (server: FastifyInstance) {
                 },
                 where: {
                     id: gameId,
+                }
+            })
+
+            await prisma.gameQuestion.updateMany({
+                data: {
+                    isDeleted: true
+                },
+                where: {
+                    game_id: gameId,
                 }
             })
 
