@@ -39,6 +39,8 @@ export async function verifyUser (request: FastifyRequest, reply: FastifyReply, 
         throw new Error('Internal server error')
     }
 
+    if (dbUser.isDeleted) return reply.code(401).send({error: 'Invalid credentials'})
+
     if (isAdminRoute && clerkUser.publicMetadata.role !== 'admin') {
         reply.code(403)
         throw new Error('Access Forbidden')
@@ -52,7 +54,7 @@ export async function verifyUser (request: FastifyRequest, reply: FastifyReply, 
 
     request.authenticatedUser = {
         ...dbUser,
-        clerkUser: clerkUser
+        clerkUser
     }
     return
 }

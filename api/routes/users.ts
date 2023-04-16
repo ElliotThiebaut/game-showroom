@@ -57,14 +57,26 @@ async function routes (server: FastifyInstance) {
     }, async (request, reply) => {
         const { userId } = request.params as { userId: string }
         try {
-            const users = await prisma.user.findMany({
+            const dbUsers = await prisma.user.findMany({
                 where: {
                     AND: [{id: userId}, {isDeleted: false}]
                 }
             })
 
-            if (users.length === 0) return reply.code(404).send({error: 'User not found'})
-            else return reply.code(200).send(users[0])
+            if (dbUsers.length === 0) return reply.code(404).send({error: 'User not found'})
+
+            let clerkUser
+            try {
+                clerkUser = await clerkClient.users.getUser(dbUsers[0].clerk_id)
+            } catch (e: any) {
+                request.log.error(`Clerk error : ${e}`)
+                return reply.code(500).send({error: 'Internal server error'})
+            }
+
+            return reply.code(200).send({
+                ...dbUsers[0],
+                clerkUser
+            })
         } catch (e: any) {
             e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
             return reply.code(500).send({error: 'Internal server error'})
@@ -120,6 +132,35 @@ async function routes (server: FastifyInstance) {
             e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
             if (e.code === 'P2025') return reply.code(404).send({error: 'User not found'})
             else return  reply.code(500).send({error: 'Internal server error'})
+        }
+    })
+
+    server.put('/update/admin/:userId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        },
+    }, async (request, reply) => {
+        const { userId } = request.params as { userId: string }
+        try {
+            const dbUsers = await prisma.user.findMany({
+                where: {
+                    AND: [{id: userId}, {isDeleted: false}]
+                }
+            })
+
+            if (dbUsers.length === 0) return reply.code(404).send({error: 'User not found'})
+
+            try {
+                await clerkClient.users.updateUser(dbUsers[0].clerk_id, {publicMetadata: {role: 'admin'}});
+            } catch (e: any) {
+                request.log.error(`Clerk error : ${e}`)
+                return reply.code(500).send({error: 'Internal server error'})
+            }
+
+            return reply.code(200).send({message: 'User updated'})
+        } catch (e: any) {
+            e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
+            return reply.code(500).send({error: 'Internal server error'})
         }
     })
 
