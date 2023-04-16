@@ -4,7 +4,7 @@ import axios from "axios";
 import * as fs from "fs";
 import {pipeline} from "stream";
 import * as util from "util";
-import {verifyUser} from "../auth";
+import {verifyUser} from "../authHandler";
 const pump = util.promisify(pipeline)
 
 // Prefix '/uploads' is added in api\app.ts

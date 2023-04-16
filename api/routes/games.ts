@@ -1,6 +1,6 @@
 import {FastifyInstance} from "fastify";
 import prisma from '../prisma';
-import {verifyUser} from "../auth";
+import {verifyUser} from "../authHandler";
 
 const postNewGameOptions = {
     body: {

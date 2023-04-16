@@ -1,9 +1,9 @@
 import {getAuth} from "@clerk/fastify";
 import {FastifyReply, FastifyRequest} from "fastify";
-import * as dotenv from 'dotenv'
 import prisma from './prisma';
-import { clerkClient } from "./clerk";
-dotenv.config()
+import { clerkClient } from "./clerkHandler";
+import envConfig from './envHandler';
+envConfig()
 
 export async function verifyUser (request: FastifyRequest, reply: FastifyReply, isAdminRoute: boolean = false) {
     let { userId  } = getAuth(request);

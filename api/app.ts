@@ -1,10 +1,11 @@
 import Fastify from 'fastify'
 import multipart from '@fastify/multipart'
-import * as dotenv from 'dotenv'
-import { clerkOptions } from './clerk'
+import { clerkOptions } from './clerkHandler'
 import { clerkPlugin } from '@clerk/fastify'
 import type { User as ClerkUser } from '@clerk/backend'
 import {User as DbUser} from "@prisma/client"
+import envConfig from './envHandler';
+envConfig()
 
 import users from "./routes/users";
 import games from "./routes/games";
@@ -12,7 +13,6 @@ import uploads from "./routes/uploads";
 import gamesQuestions from "./routes/gamesQuestions";
 import answers from "./routes/answers";
 
-dotenv.config()
 
 interface IUser extends DbUser {
     clerkUser: ClerkUser

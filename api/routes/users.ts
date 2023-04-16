@@ -1,7 +1,7 @@
 import {FastifyInstance} from "fastify";
 import prisma from '../prisma';
-import { clerkClient } from "../clerk";
-import {verifyUser} from "../auth";
+import { clerkClient } from "../clerkHandler";
+import {verifyUser} from "../authHandler";
 
 const postRegisterOptions = {
     body: {
