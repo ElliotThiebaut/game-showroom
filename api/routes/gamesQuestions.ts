@@ -1,50 +1,47 @@
 import {FastifyInstance} from "fastify";
 import prisma from '../prisma';
+import {verifyUser} from "../auth";
 
 const postNewGameQuestionOptions = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                videoTimestamp: { type: 'number' },
-                questionType: { type: 'string', enum: ['TEXT', 'SELECT', 'SELECT_MULTIPLE', 'RANGE'] },
-                question: { type: 'string', minLength: 2 },
-                defaultAnswers: {
-                    type: 'array',
-                    minItems: 1,
-                    items: { type: 'string' }
-                },
+    body: {
+        type: 'object',
+        properties: {
+            videoTimestamp: { type: 'number' },
+            questionType: { type: 'string', enum: ['TEXT', 'SELECT', 'SELECT_MULTIPLE', 'RANGE'] },
+            question: { type: 'string', minLength: 2 },
+            defaultAnswers: {
+                type: 'array',
+                minItems: 1,
+                items: { type: 'string' }
             },
-            required: ['videoTimestamp', 'questionType', 'question']
         },
-        params: {
-            type: 'object',
-            properties: {
-                gameId: { type: 'string', minLength: 2 }
-            }
+        required: ['videoTimestamp', 'questionType', 'question']
+    },
+    params: {
+        type: 'object',
+        properties: {
+            gameId: { type: 'string', minLength: 2 }
         }
     }
 }
 
 const postUpdateGameQuestionOptions = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                videoTimestamp: { type: 'number' },
-                questionType: { type: 'string', enum: ['TEXT', 'SELECT', 'SELECT_MULTIPLE', 'RANGE'] },
-                question: { type: 'string', minLength: 2 },
-                defaultAnswers: {
-                    type: 'array',
-                    items: { type: 'string' }
-                },
-            }
-        },
-        params: {
-            type: 'object',
-            properties: {
-                gameQuestionId: { type: 'string', minLength: 2 }
-            }
+    body: {
+        type: 'object',
+        properties: {
+            videoTimestamp: { type: 'number' },
+            questionType: { type: 'string', enum: ['TEXT', 'SELECT', 'SELECT_MULTIPLE', 'RANGE'] },
+            question: { type: 'string', minLength: 2 },
+            defaultAnswers: {
+                type: 'array',
+                items: { type: 'string' }
+            },
+        }
+    },
+    params: {
+        type: 'object',
+        properties: {
+            gameQuestionId: { type: 'string', minLength: 2 }
         }
     }
 }
@@ -57,7 +54,11 @@ enum QuestionTypes {
 }
 
 async function routes (server: FastifyInstance) {
-    server.get('/', async (request, reply) => {
+    server.get('/', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, async (request, reply) => {
         try {
             return prisma.gameQuestion.findMany({
                 where: {
@@ -73,7 +74,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.get('/:gameQuestionId', async (request, reply) => {
+    server.get('/:gameQuestionId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, async (request, reply) => {
         const { gameQuestionId } = request.params as { gameQuestionId: string }
         try {
             const gameQuestions = await prisma.gameQuestion.findMany({
@@ -90,7 +95,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.get('/game/:gameId', async (request, reply) => {
+    server.get('/game/:gameId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
 
         try {
@@ -108,7 +117,12 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.post('/new/:gameId', postNewGameQuestionOptions, async (request, reply) => {
+    server.post('/new/:gameId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        },
+        schema: postNewGameQuestionOptions
+    }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
         const { videoTimestamp, questionType, question, defaultAnswers } = request.body as { videoTimestamp: number, questionType: QuestionTypes, question: string, defaultAnswers: string[] }
 
@@ -135,7 +149,12 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.put('/update/:gameQuestionId', postUpdateGameQuestionOptions, async (request, reply) => {
+    server.put('/update/:gameQuestionId',  {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        },
+        schema: postUpdateGameQuestionOptions
+    }, async (request, reply) => {
         const { gameQuestionId } = request.params as { gameQuestionId: string }
         const { videoTimestamp, questionType, question, defaultAnswers } = request.body as {
             videoTimestamp: number | undefined,
@@ -165,7 +184,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.delete('/delete/:gameQuestionId', async (request, reply) => {
+    server.delete('/delete/:gameQuestionId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        }
+    }, async (request, reply) => {
         const { gameQuestionId } = request.params as { gameQuestionId: string }
         try {
             await prisma.gameQuestion.update({

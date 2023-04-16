@@ -1,24 +1,27 @@
 import {FastifyInstance} from "fastify";
 import prisma from '../prisma';
+import { clerkClient } from "../clerk";
+import {verifyUser} from "../auth";
 
 const postRegisterOptions = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                email: { type: 'string' },
-                username: { type: 'string', minLength: 2 }
-            },
-            required: ['email', 'username']
-        }
+    body: {
+        type: 'object',
+        properties: {
+            clerk_id: { type: 'string' }
+        },
+        required: ['clerk_id']
     }
 }
 
 // Prefix '/users' is added in api\app.ts
 async function routes (server: FastifyInstance) {
-    server.get('/', (request, reply) => {
+    server.get('/', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        }
+    }, async (request, reply) => {
         try {
-            return prisma.user.findMany({
+            const dbUsers = await prisma.user.findMany({
                 where: {
                     isDeleted: false
                 },
@@ -26,13 +29,32 @@ async function routes (server: FastifyInstance) {
                     created_at: 'desc'
                 }
             })
+
+            const clerkUsers = await clerkClient.users.getUserList();
+
+            return dbUsers.map(dbUser => {
+                const clerkUser = clerkUsers.find(clerkUser => clerkUser['id'] === dbUser['clerk_id'])
+                return {...dbUser, clerkUser}
+            })
         } catch (e: any) {
             e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
             return reply.code(500).send({error: 'Internal server error'})
         }
     })
 
-    server.get('/:userId', async (request, reply) => {
+    server.get('/me', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, async (request, reply) => {
+        return request.authenticatedUser
+    })
+
+    server.get('/:userId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, async (request, reply) => {
         const { userId } = request.params as { userId: string }
         try {
             const users = await prisma.user.findMany({
@@ -49,39 +71,44 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.post('/new', postRegisterOptions, async (request, reply) => {
-        const {email, username} = request.body as {email: string, username: string}
+    server.post('/new', {
+        schema: postRegisterOptions
+    }, async (request, reply) => {
+        const {clerk_id} = request.body as {clerk_id: string}
 
-        function isValidEmail(email: string): boolean {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            return emailRegex.test(email);
+        try {
+            await clerkClient.users.getUser(clerk_id)
+
+            await clerkClient.users.updateUser(clerk_id, {publicMetadata: {role: 'user'}});
+        } catch (e) {
+            return reply.code(400).send({error: 'No clerk user found'})
         }
-
-        if (!isValidEmail(email)) return reply.code(400).send({error: 'Invalid email'})
 
         try {
             const user = await prisma.user.create({
                 data: {
-                    email,
-                    username
+                    clerk_id
                 }
             })
 
             return reply.code(201).send(user)
         } catch (e: any) {
             e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
-            if (e.code === 'P2002' && e.meta.target[0] === 'email') return reply.code(400).send({error: 'Email already exists'})
-            else if (e.code === 'P2002' && e.meta.target[0] === 'username') return reply.code(400).send({error: 'Username already exists'})
+            if (e.code === 'P2002') return reply.code(400).send({error: 'User already exists'})
             else return reply.code(500).send({error: 'Internal server error'})
         }
     })
 
-    server.put('/tutorial/:userId', async (request, reply) => {
+    server.put('/update/tutorial/:userId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        },
+    }, async (request, reply) => {
         const { userId } = request.params as { userId: string }
         try {
             await prisma.user.update({
                 data: {
-                  tutorial: false
+                    showTutorial: false
                 },
                 where: {
                     id: userId,
@@ -96,7 +123,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.delete('/delete/:userId', async (request, reply) => {
+    server.delete('/delete/:userId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        }
+    }, async (request, reply) => {
         const { userId } = request.params as { userId: string }
         try {
             await prisma.user.update({

@@ -1,48 +1,45 @@
 import {FastifyInstance} from "fastify";
 import prisma from '../prisma';
+import {verifyUser} from "../auth";
 
 const postNewGameOptions = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                name: { type: 'string', minLength: 1 },
-                category: { type: 'string', minLength: 2 },
-                description: { type: 'string', minLength: 2 },
-                designers: {
-                    type: 'array',
-                    minItems: 1,
-                    items: { type: 'string' }
-                },
-                illustrators: {
-                    type: 'array',
-                    minItems: 1,
-                    items: { type: 'string' }
-                }
+    body: {
+        type: 'object',
+        properties: {
+            name: { type: 'string', minLength: 1 },
+            category: { type: 'string', minLength: 2 },
+            description: { type: 'string', minLength: 2 },
+            designers: {
+                type: 'array',
+                minItems: 1,
+                items: { type: 'string' }
             },
-            required: ['name', 'category', 'description', 'designers', 'illustrators']
-        }
+            illustrators: {
+                type: 'array',
+                minItems: 1,
+                items: { type: 'string' }
+            }
+        },
+        required: ['name', 'category', 'description', 'designers', 'illustrators']
     }
 }
 
 const postUpdateGameOptions = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                name: { type: 'string', minLength: 1 },
-                category: { type: 'string', minLength: 2 },
-                description: { type: 'string', minLength: 2 },
-                designers: {
-                    type: 'array',
-                    minItems: 1,
-                    items: { type: 'string' }
-                },
-                illustrators: {
-                    type: 'array',
-                    minItems: 1,
-                    items: { type: 'string' }
-                }
+    body: {
+        type: 'object',
+        properties: {
+            name: { type: 'string', minLength: 1 },
+            category: { type: 'string', minLength: 2 },
+            description: { type: 'string', minLength: 2 },
+            designers: {
+                type: 'array',
+                minItems: 1,
+                items: { type: 'string' }
+            },
+            illustrators: {
+                type: 'array',
+                minItems: 1,
+                items: { type: 'string' }
             }
         }
     }
@@ -50,7 +47,11 @@ const postUpdateGameOptions = {
 
 // Prefix '/games' is added in api\app.ts
 async function routes (server: FastifyInstance) {
-    server.get('/', (request, reply) => {
+    server.get('/', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, (request, reply) => {
         try {
             return prisma.game.findMany({
                 where: {
@@ -69,7 +70,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.get('/:gameId', async (request, reply) => {
+    server.get('/:gameId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
         try {
             const games = await prisma.game.findMany({
@@ -89,7 +94,12 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.post('/new', postNewGameOptions, async (request, reply) => {
+    server.post('/new', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        },
+        schema: postNewGameOptions
+    }, async (request, reply) => {
         const {name, category, description, designers, illustrators} = request.body as {
             name: string,
             category: string,
@@ -116,7 +126,12 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.put('/update/:gameId', postUpdateGameOptions, async (request, reply) => {
+    server.put('/update/:gameId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        },
+        schema: postUpdateGameOptions
+    }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
         const { name, category, description, designers, illustrators } = request.body as {
             name: string | undefined,
@@ -148,7 +163,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.delete('/delete/:gameId', async (request, reply) => {
+    server.delete('/delete/:gameId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        },
+    }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
         try {
             await prisma.game.update({

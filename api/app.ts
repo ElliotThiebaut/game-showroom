@@ -1,6 +1,10 @@
 import Fastify from 'fastify'
 import multipart from '@fastify/multipart'
 import * as dotenv from 'dotenv'
+import { clerkOptions } from './clerk'
+import { clerkPlugin } from '@clerk/fastify'
+import type { User as ClerkUser } from '@clerk/backend'
+import {User as DbUser} from "@prisma/client"
 
 import users from "./routes/users";
 import games from "./routes/games";
@@ -10,10 +14,21 @@ import answers from "./routes/answers";
 
 dotenv.config()
 
+interface IUser extends DbUser {
+    clerkUser: ClerkUser
+}
+
+declare module 'fastify' {
+    export interface FastifyRequest {
+        authenticatedUser:  IUser
+    }
+}
+
 const server = Fastify({
     logger: true
 })
 
+server.register(clerkPlugin, clerkOptions);
 server.register(multipart)
 
 server.register(users, {prefix: 'users'})

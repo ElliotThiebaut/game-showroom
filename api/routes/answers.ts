@@ -1,27 +1,30 @@
 import {FastifyInstance} from "fastify";
 import prisma from '../prisma';
+import {verifyUser} from "../auth";
 
 const postNewAnswerOptions = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                answer: { type: 'string' }
-            },
-            required: ['answer']
+    body: {
+        type: 'object',
+        properties: {
+            answer: { type: 'string' }
         },
-        params: {
-            type: 'object',
-            properties: {
-                gameQuestionId: { type: 'string', minLength: 2 },
-                userId: { type: 'string', minLength: 2 }
-            }
+        required: ['answer']
+    },
+    params: {
+        type: 'object',
+        properties: {
+            gameQuestionId: { type: 'string', minLength: 2 },
+            userId: { type: 'string', minLength: 2 }
         }
     }
 }
 
 async function routes (server: FastifyInstance) {
-    server.get('/', async (request, reply) => {
+    server.get('/', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        }
+    }, async (request, reply) => {
         try {
             return prisma.answers.findMany({
                 orderBy: {
@@ -37,7 +40,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.get('/game-question/:gameQuestionId', async (request, reply) => {
+    server.get('/game-question/:gameQuestionId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        }
+    }, async (request, reply) => {
         const { gameQuestionId } = request.params as { gameQuestionId: string }
         try {
             const answers = await prisma.answers.findMany({
@@ -60,7 +67,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.get('/user/:userId', async (request, reply) => {
+    server.get('/user/:userId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, async (request, reply) => {
         const { userId } = request.params as { userId: string }
         try {
             const answers = await prisma.answers.findMany({
@@ -83,7 +94,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.get('/game/:gameId', async (request, reply) => {
+    server.get('/game/:gameId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        }
+    }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
         try {
             const answers = await prisma.answers.findMany({
@@ -108,7 +123,12 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.post('/new/game-question/:gameQuestionId/user/:userId', postNewAnswerOptions, async (request, reply) => {
+    server.post('/new/game-question/:gameQuestionId/user/:userId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        },
+        schema: postNewAnswerOptions
+    }, async (request, reply) => {
         const { gameQuestionId, userId } = request.params as { gameQuestionId: string, userId: string }
         const { answer } = request.body as { answer: string }
 
@@ -138,7 +158,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.delete('/delete/game-question/:gameQuestionId/user/:userId', async (request, reply) => {
+    server.delete('/delete/game-question/:gameQuestionId/user/:userId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply)
+        }
+    }, async (request, reply) => {
         const { gameQuestionId, userId } = request.params as { gameQuestionId: string, userId: string }
         try {
             await prisma.answers.update({

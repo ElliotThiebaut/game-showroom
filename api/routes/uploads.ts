@@ -4,11 +4,16 @@ import axios from "axios";
 import * as fs from "fs";
 import {pipeline} from "stream";
 import * as util from "util";
+import {verifyUser} from "../auth";
 const pump = util.promisify(pipeline)
 
 // Prefix '/uploads' is added in api\app.ts
 async function routes (server: FastifyInstance) {
-    server.post('/game/cover/:gameId', async (request, reply) => {
+    server.post('/game/cover/:gameId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        }
+    }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
 
         let game: {id: string, name: string}[] = []
@@ -69,7 +74,11 @@ async function routes (server: FastifyInstance) {
         }
     })
 
-    server.post('/game/video/:gameId', async (request, reply) => {
+    server.post('/game/video/:gameId', {
+        preHandler: async (request, reply) => {
+            await verifyUser(request, reply, true)
+        }
+    }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
 
         let game: {id: string, name: string}[] = []

@@ -23,5 +23,19 @@ Le déploiement du service se fait via le fichier `docker-compose.yml` qui crée
 Le fichier `.env` permet de configurer toutes les variables nécessaires :
 
 ```dotenv
-A DEFINIR
+# API
+DATABASE_URL=DB_URL_FOR_PRISMA
+
+BUNNYCDN_STORAGE_ACCESS_KEY=BUNNYCDN_API_KEY
+BUNNYCDN_STREAM_ACCESS_KEY=BUNNYCDN_API_KEY
+
+CLERK_PUBLISHABLE_KEY=CLERK_API_KEY
+CLERK_SECRET_KEY=CLERK_API_KEY
+
+USER_DEV_KEY=RANDOM_TOKEN
+USER_DEV_IP=LOCALHOST_IP
+
+# CLIENT APP
+
+# ADMIN APP
 ```
