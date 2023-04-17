@@ -1,8 +1,8 @@
 {
-  "name": "api",
+  "name": "game-showroom-api",
   "version": "1.0.0",
   "type": "commonjs",
-  "description": "Api for board game gallerie",
+  "description": "Game Showroom API",
   "main": "app.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
