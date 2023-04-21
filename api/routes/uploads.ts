@@ -16,7 +16,7 @@ async function routes (server: FastifyInstance) {
     }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
 
-        let game: {id: string, name: string}[] = []
+        let game = []
         try {
             game = await prisma.game.findMany({
                 where: {
@@ -24,6 +24,7 @@ async function routes (server: FastifyInstance) {
                 },
                 select: {
                     id: true,
+                    imgUrl: true,
                     name: true
                 }
             })
@@ -38,6 +39,19 @@ async function routes (server: FastifyInstance) {
 
         if (!data) return reply.code(400).send({error: 'No file provided'})
         if (data.mimetype !== 'image/png' && data.mimetype !== 'image/jpeg') return reply.code(400).send({error: 'File must be a png or jpeg'})
+
+        if (game[0].imgUrl) {
+            try {
+                await axios.delete(`https://storage.bunnycdn.com/game-showroom/${game[0].imgUrl.replace('https://cdn.game-showroom.roquette-lab.fr/', '')}`, {
+                    headers: {
+                        AccessKey: process.env.BUNNYCDN_STORAGE_ACCESS_KEY
+                    }
+                })
+            } catch (e) {
+                request.log.error(`Bunny CDN error : ${e}`)
+                return reply.code(500).send({error: 'Internal server error'})
+            }
+        }
 
         let fileName
         try {
@@ -81,7 +95,7 @@ async function routes (server: FastifyInstance) {
     }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
 
-        let game: {id: string, name: string}[] = []
+        let game = []
         try {
             game = await prisma.game.findMany({
                 where: {
@@ -89,6 +103,7 @@ async function routes (server: FastifyInstance) {
                 },
                 select: {
                     id: true,
+                    videoUrl: true,
                     name: true
                 }
             })
@@ -103,6 +118,19 @@ async function routes (server: FastifyInstance) {
 
         if (!data) return reply.code(400).send({error: 'No file provided'})
         if (data.mimetype !== 'video/mp4') return reply.code(400).send({error: 'File must be a mp4'})
+
+        if (game[0].videoUrl) {
+            try {
+                await axios.delete(`https://video.bunnycdn.com/library/112680/videos/${game[0].videoUrl.replace('https://vz-68bdb7a7-8f8.b-cdn.net/', '').replace('/playlist.m3u8', '')}`, {
+                    headers: {
+                        AccessKey: process.env.BUNNYCDN_STREAM_ACCESS_KEY,
+                    }
+                })
+            } catch (e) {
+                request.log.error(`Bunny CDN error : ${e}`)
+                return reply.code(500).send({error: 'Internal server error'})
+            }
+        }
 
         let cdnResponse
         try {

@@ -1,6 +1,8 @@
 import {FastifyInstance} from "fastify";
 import prisma from '../prisma';
 import {verifyUser} from "../authHandler";
+import {Game} from "@prisma/client";
+import axios from "axios";
 
 const postNewGameOptions = {
     body: {
@@ -169,10 +171,57 @@ async function routes (server: FastifyInstance) {
         },
     }, async (request, reply) => {
         const { gameId } = request.params as { gameId: string }
+        let dbGame: Game
+        let isImgDeleted = false
+        let isVideoDeleted = false
+
+        try {
+            dbGame = await prisma.game.findUniqueOrThrow({
+                where: {
+                    id: gameId,
+                }
+            })
+
+        } catch (e: any) {
+            e.clientVersion ? request.log.error(`Prisma error : ${e.code}`) : request.log.error(e)
+            reply.code(404)
+            throw new Error('Invalid game id')
+        }
+
+        if (dbGame.imgUrl) {
+            try {
+                await axios.delete(`https://storage.bunnycdn.com/game-showroom/${dbGame.imgUrl.replace('https://cdn.game-showroom.roquette-lab.fr/', '')}`, {
+                    headers: {
+                        AccessKey: process.env.BUNNYCDN_STORAGE_ACCESS_KEY
+                    }
+                })
+                isImgDeleted = true
+            } catch (e) {
+                request.log.error(`Bunny CDN error : ${e}`)
+                return reply.code(500).send({error: 'Internal server error'})
+            }
+        }
+
+        if (dbGame.videoUrl) {
+            try {
+                await axios.delete(`https://video.bunnycdn.com/library/112680/videos/${dbGame.videoUrl.replace('https://vz-68bdb7a7-8f8.b-cdn.net/', '').replace('/playlist.m3u8', '')}`, {
+                    headers: {
+                        AccessKey: process.env.BUNNYCDN_STREAM_ACCESS_KEY,
+                    }
+                })
+                isVideoDeleted = true
+            } catch (e) {
+                request.log.error(`Bunny CDN error : ${e}`)
+                return reply.code(500).send({error: 'Internal server error'})
+            }
+        }
+
         try {
             await prisma.game.update({
                 data: {
-                    isDeleted: true
+                    isDeleted: true,
+                    imgUrl: isImgDeleted ? null : undefined,
+                    videoUrl: isVideoDeleted ? null : undefined
                 },
                 where: {
                     id: gameId,
