@@ -1,22 +1,25 @@
 <script setup lang="ts">
 	import { clerk } from "@/clerk";
+	import { onMounted } from "vue";
 
-	clerk.openSignIn({
-		appearance: {
-			elements: {
-				modalBackdrop: 'bg-white lg:bg-gray-200 justify-center items-center lg:-mt-40',
-				modalCloseButton: 'hidden',
-				card: 'shadow-none lg:shadow-sm',
-				logoBox: 'hidden',
-			}
-		},
-		routing: "path",
-		path: '/'
+	onMounted(() => {
+		clerk.mountSignIn(<HTMLDivElement>document.getElementById("container-sign-in"),
+			{
+				appearance: {
+					elements: {
+						modalCloseButton: 'hidden',
+						card: 'shadow-none sm:shadow-lg',
+						logoBox: 'hidden',
+						rootBox: 'w-screen h-screen flex justify-center items-center bg-white sm:bg-gray-200'
+					}
+				},
+				path: '/'
+			})
 	})
 </script>
 
 <template>
-	<div id="clerk-sign-in"></div>
+	<div id="container-sign-in" class=""></div>
 </template>
 
 <style scoped></style>
