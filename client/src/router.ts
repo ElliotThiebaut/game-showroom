@@ -28,13 +28,13 @@ export default createRouter({
     routes: [
         {
             path: "/",
-            name: "Home",
+            name: "home",
             component: Home,
             beforeEnter: isUserAuthenticated
         },
         {
             path: "/login",
-            name: "Login",
+            name: "login",
             component: () => import("@/views/Login.vue"),
             beforeEnter: isUserUndefined
         },

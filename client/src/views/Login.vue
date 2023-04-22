@@ -19,7 +19,7 @@
 </script>
 
 <template>
-	<div id="container-sign-in" class=""></div>
+	<div id="container-sign-in"></div>
 </template>
 
 <style scoped></style>
