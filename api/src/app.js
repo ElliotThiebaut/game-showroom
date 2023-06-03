@@ -1,10 +1,11 @@
 import express from 'express'
 import bodyParser from "body-parser";
 import cors from 'cors';
-import {mongoConnect} from "./db-connexion.js";
+import {client, mongoConnect} from "./db-connexion.js";
 import {ApiError, errorHandler} from "./middleware/error.js";
 
-import {router as routerGathering} from "./routes/gathering.js"
+import {router, router as routerGathering} from "./routes/gathering.js"
+import {Auth} from "./middleware/auth.js";
 
 
 // Configuring express and its middleware
@@ -19,6 +20,10 @@ app.use(bodyParser.json());
 //Using routers to register all routes
 
 app.use(routerGathering)
+
+app.get('/health', async(req, res) => {
+    res.send({status: 'ok'})
+})
 
 //Catching all unknown routes
 app.all('*', (req, res, next) => {
