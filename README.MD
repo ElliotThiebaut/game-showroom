@@ -1,6 +1,6 @@
 # Game Showroom
 
-Solution web permettant à des entreprises de présenter de nouveaux produits en vidéo tout en récoltant l'avis des clients !
+Site web permettant de présenter de nouveaux produits en vidéo tout en récoltant l'avis des usagers !
 
 ## Structure
 
